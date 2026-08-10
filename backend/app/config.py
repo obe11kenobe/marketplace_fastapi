@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     ]
     static_dir: str = "static"
     images_dir: str = "static/images"
+    jwt_secret_key: str
+    jwt_access_expires_minutes: int = 15
+    jwt_refresh_expires_days: int = 20
 
     class Config:
         env_file = ".env"

@@ -6,6 +6,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .config import settings
 from .database import init_db
 from .routes import products_router, categories_router, cart_router
+from .auth import auth_router
+from .auth.security.security import security
 
 app = FastAPI(
     title=settings.app_name,
@@ -27,6 +29,10 @@ app.mount('/static', StaticFiles(directory=settings.static_dir), name='static')
 app.include_router(products_router)
 app.include_router(categories_router)
 app.include_router(cart_router)
+app.include_router(auth_router)
+
+# Протухший или подделанный токен вернёт 401, а не 500.
+security.handle_errors(app)
 
 @app.on_event('startup')
 def on_startup():
