@@ -54,7 +54,7 @@ class CartService:
         total_price = 0.0
         total_items = 0
 
-        for product_id, quantity in products_dict.items():
+        for product_id, quantity in cart_data.items():
             if product_id in products_dict:
                 product = products_dict[product_id]
                 subtotal = product.price * quantity
@@ -68,5 +68,5 @@ class CartService:
                 total_items += quantity
 
         return CartResponse(
-            items=cart_items, total=round(total_price), items_count=total_items
+            items=cart_items, total=round(total_price, 2), items_count=total_items
         )
