@@ -1,17 +1,51 @@
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCart } from '../cart'
+import { useAuth } from '../auth'
+import { api } from '../api'
+import { notify } from '../toast'
 
 const cart = useCart()
+const auth = useAuth()
+const router = useRouter()
+
+const placing = ref(false)
+const error = ref('')
+
+const money = (n) => n.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+async function checkout() {
+  if (!auth.isAuthenticated.value) {
+    router.push({ name: 'login', query: { redirect: '/cart' } })
+    return
+  }
+
+  placing.value = true
+  error.value = ''
+  try {
+    const order = await api.createOrder(cart.items)
+    await cart.clear()
+    notify(`Заказ №${order.id} оформлен`)
+    router.push('/orders')
+  } catch (e) {
+    error.value = e.message
+  } finally {
+    placing.value = false
+  }
+}
 </script>
 
 <template>
   <h1>Корзина</h1>
 
   <p v-if="cart.error.value" class="alert">{{ cart.error.value }}</p>
+  <p v-if="error" class="alert">{{ error }}</p>
 
-  <p v-if="!cart.details.value.items.length" class="muted empty">
-    Пока пусто. <RouterLink to="/" class="link">Перейти в каталог</RouterLink>
-  </p>
+  <div v-if="!cart.details.value.items.length" class="empty">
+    <p class="muted">Пока пусто.</p>
+    <RouterLink to="/" class="btn">Перейти в каталог</RouterLink>
+  </div>
 
   <div v-else class="layout">
     <ul class="card list">
@@ -25,30 +59,19 @@ const cart = useCart()
           <RouterLink :to="{ name: 'product', params: { id: item.product_id } }" class="name">
             {{ item.name }}
           </RouterLink>
-          <span class="muted unit">{{ item.price.toLocaleString('ru-RU') }} ₽ за штуку</span>
+          <span class="muted unit">{{ money(item.price) }} ₽ за штуку</span>
         </div>
 
         <div class="qty">
-          <button
-            class="step"
-            :aria-label="`Уменьшить количество: ${item.name}`"
-            @click="cart.setQuantity(item.product_id, item.quantity - 1)"
-          >−</button>
-          <input
-            type="number"
-            min="1"
-            :value="item.quantity"
-            :aria-label="`Количество: ${item.name}`"
-            @change="cart.setQuantity(item.product_id, $event.target.valueAsNumber)"
-          />
-          <button
-            class="step"
-            :aria-label="`Увеличить количество: ${item.name}`"
-            @click="cart.setQuantity(item.product_id, item.quantity + 1)"
-          >+</button>
+          <button class="step" :aria-label="`Уменьшить: ${item.name}`"
+                  @click="cart.setQuantity(item.product_id, item.quantity - 1)">−</button>
+          <input type="number" min="1" :value="item.quantity" :aria-label="`Количество: ${item.name}`"
+                 @change="cart.setQuantity(item.product_id, $event.target.valueAsNumber)" />
+          <button class="step" :aria-label="`Увеличить: ${item.name}`"
+                  @click="cart.setQuantity(item.product_id, item.quantity + 1)">+</button>
         </div>
 
-        <span class="subtotal">{{ item.subtotal.toLocaleString('ru-RU') }} ₽</span>
+        <span class="subtotal">{{ money(item.subtotal) }} ₽</span>
 
         <button class="remove" :aria-label="`Удалить ${item.name}`" @click="cart.remove(item.product_id)">
           ×
@@ -63,11 +86,18 @@ const cart = useCart()
       </div>
       <div class="line total">
         <span>Итого</span>
-        <span>{{ cart.details.value.total.toLocaleString('ru-RU') }} ₽</span>
+        <span>{{ money(cart.details.value.total) }} ₽</span>
       </div>
-      <button class="btn checkout" disabled>Оформить заказ</button>
-      <p class="muted note">Оформление появится, когда на бэкенде будут заказы.</p>
-      <button class="btn btn-ghost" @click="cart.clear()">Очистить корзину</button>
+
+      <button class="btn btn-lg btn-block" :disabled="placing" @click="checkout">
+        {{ placing ? 'Оформляем…' : auth.isAuthenticated.value ? 'Оформить заказ' : 'Войти и оформить' }}
+      </button>
+
+      <p v-if="!auth.isAuthenticated.value" class="hint center">
+        Для оформления нужен аккаунт
+      </p>
+
+      <button class="btn btn-ghost btn-block" @click="cart.clear()">Очистить корзину</button>
     </aside>
   </div>
 </template>
@@ -75,26 +105,26 @@ const cart = useCart()
 <style scoped>
 h1 {
   font-size: 26px;
-  letter-spacing: -0.02em;
   margin: 0 0 24px;
 }
 
 .empty {
-  padding: 48px 0;
-}
-
-.link {
-  color: var(--accent);
+  padding: 64px 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
 }
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1fr) 300px;
   gap: 24px;
   align-items: start;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 820px) {
   .layout {
     grid-template-columns: 1fr;
   }
@@ -103,15 +133,15 @@ h1 {
 .list {
   list-style: none;
   margin: 0;
-  padding: 4px 8px;
+  padding: 4px 10px;
 }
 
 .row {
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr) auto auto auto;
+  grid-template-columns: 68px minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 16px;
-  padding: 14px 12px;
+  padding: 16px 10px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -122,14 +152,14 @@ h1 {
 @media (max-width: 560px) {
   .row {
     grid-template-columns: 56px minmax(0, 1fr) auto;
-    row-gap: 10px;
+    row-gap: 12px;
   }
 }
 
 .thumb {
-  width: 64px;
-  height: 64px;
-  border-radius: 8px;
+  width: 68px;
+  height: 68px;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--bg);
 }
@@ -145,7 +175,7 @@ h1 {
 .meta {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -164,17 +194,16 @@ h1 {
 .qty {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--border);
-  border-radius: 9px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
   overflow: hidden;
 }
 
 .step {
-  width: 32px;
-  height: 34px;
+  width: 34px;
+  height: 36px;
   border: 0;
   background: transparent;
-  color: var(--text);
   font-size: 16px;
 }
 
@@ -183,15 +212,13 @@ h1 {
 }
 
 .qty input {
-  width: 46px;
-  height: 34px;
+  width: 48px;
+  height: 36px;
   border: 0;
-  border-left: 1px solid var(--border);
-  border-right: 1px solid var(--border);
+  border-left: 1px solid var(--border-strong);
+  border-right: 1px solid var(--border-strong);
   background: transparent;
-  color: var(--text);
   text-align: center;
-  font: inherit;
   -moz-appearance: textfield;
 }
 
@@ -212,7 +239,7 @@ h1 {
   color: var(--muted);
   font-size: 20px;
   line-height: 1;
-  padding: 4px 8px;
+  padding: 6px 9px;
   border-radius: 8px;
 }
 
@@ -222,12 +249,12 @@ h1 {
 }
 
 .summary {
-  padding: 20px;
+  padding: 22px;
   position: sticky;
-  top: 86px;
+  top: calc(var(--header-h) + 20px);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 13px;
 }
 
 .line {
@@ -236,20 +263,14 @@ h1 {
 }
 
 .total {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 650;
-  padding-top: 12px;
+  padding-top: 13px;
   border-top: 1px solid var(--border);
 }
 
-.checkout {
-  width: 100%;
-  margin-top: 4px;
-}
-
-.note {
-  font-size: 12px;
-  margin: 0;
+.center {
   text-align: center;
+  margin: -4px 0 0;
 }
 </style>

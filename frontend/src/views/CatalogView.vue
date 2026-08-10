@@ -41,16 +41,17 @@ watch(() => props.categoryId, load)
 </script>
 
 <template>
+  <section class="hero">
+    <h1>Каталог</h1>
+    <p class="muted">Всё в одном месте — выбирайте и заказывайте</p>
+  </section>
+
   <div class="layout">
-    <nav class="card sidebar" aria-label="Категории">
+    <nav class="sidebar" aria-label="Категории">
       <RouterLink to="/" class="cat" :class="{ active: !categoryId }">Все товары</RouterLink>
-      <RouterLink
-        v-for="c in categories"
-        :key="c.id"
-        :to="{ name: 'category', params: { id: c.id } }"
-        class="cat"
-        :class="{ active: categoryId === c.id }"
-      >
+      <RouterLink v-for="c in categories" :key="c.id"
+                  :to="{ name: 'category', params: { id: c.id } }"
+                  class="cat" :class="{ active: categoryId === c.id }">
         {{ c.name }}
       </RouterLink>
     </nav>
@@ -59,10 +60,10 @@ watch(() => props.categoryId, load)
       <p v-if="error" class="alert">{{ error }}</p>
 
       <div v-if="loading" class="grid">
-        <div v-for="n in 6" :key="n" class="card skeleton-card">
-          <div class="skeleton thumb" />
-          <div class="skeleton line" />
-          <div class="skeleton line short" />
+        <div v-for="n in 6" :key="n" class="card sk-card">
+          <div class="skeleton sk-thumb" />
+          <div class="skeleton sk-line" />
+          <div class="skeleton sk-line short" />
         </div>
       </div>
 
@@ -76,68 +77,96 @@ watch(() => props.categoryId, load)
 </template>
 
 <style scoped>
+.hero {
+  margin-bottom: 28px;
+}
+
+.hero h1 {
+  font-size: 30px;
+  margin: 0 0 6px;
+}
+
+.hero p {
+  margin: 0;
+  font-size: 15px;
+}
+
 .layout {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 28px;
+  grid-template-columns: 210px 1fr;
+  gap: 30px;
   align-items: start;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 780px) {
   .layout {
     grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .cat {
+    white-space: nowrap;
   }
 }
 
 .sidebar {
-  padding: 8px;
   position: sticky;
-  top: 86px;
+  top: calc(var(--header-h) + 20px);
 }
 
 .cat {
   display: block;
-  padding: 9px 12px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 9px 13px;
+  border-radius: 9px;
+  font-size: 14.5px;
+  color: var(--text-soft);
+  transition: background 0.14s ease, color 0.14s ease;
 }
 
 .cat:hover {
-  background: var(--bg);
+  background: var(--bg-elevated);
+  color: var(--text);
 }
 
 .cat.active {
   background: var(--accent);
   color: #fff;
+  font-weight: 550;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
 }
 
 .empty {
-  padding: 48px 0;
+  padding: 64px 0;
   text-align: center;
 }
 
-.skeleton-card {
-  padding: 0 0 16px;
+.sk-card {
+  padding: 0 0 18px;
   overflow: hidden;
 }
 
-.skeleton-card .thumb {
+.sk-thumb {
   aspect-ratio: 4 / 3;
   border-radius: 0;
 }
 
-.skeleton-card .line {
+.sk-line {
   height: 14px;
-  margin: 14px 16px 0;
+  margin: 16px 16px 0;
 }
 
-.skeleton-card .line.short {
+.sk-line.short {
   width: 45%;
 }
 </style>

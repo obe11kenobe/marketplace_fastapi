@@ -1,10 +1,8 @@
 import { reactive, readonly, computed } from 'vue'
 import { api } from './api'
 
-// ponytail: один общий reactive вместо Pinia — стор здесь ровно один.
-// Ставить Pinia, когда сторов станет несколько или понадобится их девтулс.
 const state = reactive({
-  items: JSON.parse(localStorage.getItem('cart') || '{}'), // { product_id: quantity }
+  items: JSON.parse(localStorage.getItem('cart') || '{}'),
   details: { items: [], total: 0, items_count: 0 },
   error: '',
 })
@@ -13,7 +11,6 @@ function persist() {
   localStorage.setItem('cart', JSON.stringify(state.items))
 }
 
-// Состав и суммы считает бэкенд — цены на клиенте не дублируются и не устаревают.
 async function sync() {
   try {
     state.error = ''

@@ -2,6 +2,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { api } from '../api'
 import { useCart } from '../cart'
+import { notify } from '../toast'
 
 const props = defineProps({
   id: { type: Number, required: true },
@@ -11,6 +12,8 @@ const product = ref(null)
 const loading = ref(true)
 const error = ref('')
 const cart = useCart()
+
+const money = (n) => n.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 async function load() {
   loading.value = true
@@ -25,36 +28,53 @@ async function load() {
   }
 }
 
+async function add() {
+  await cart.add(product.value.id)
+  notify(`«${product.value.name}» в корзине`)
+}
+
 onMounted(load)
 watch(() => props.id, load)
 </script>
 
 <template>
-  <p v-if="loading" class="muted">Загрузка…</p>
+  <div v-if="loading" class="detail">
+    <div class="card skeleton media" />
+    <div>
+      <div class="skeleton sk-line lg" />
+      <div class="skeleton sk-line" />
+      <div class="skeleton sk-line short" />
+    </div>
+  </div>
+
   <p v-else-if="error" class="alert">{{ error }}</p>
 
   <article v-else-if="product" class="detail">
     <div class="card media">
       <img v-if="product.image_url" :src="product.image_url" :alt="product.name" />
-      <div v-else class="media-empty" aria-hidden="true">Нет фото</div>
+      <div v-else class="media-empty" aria-hidden="true">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="3" y="3" width="18" height="18" rx="3" />
+          <circle cx="9" cy="9" r="1.6" />
+          <path d="m3 16 4.5-4.5L14 18" />
+        </svg>
+      </div>
     </div>
 
     <div class="info">
-      <RouterLink
-        v-if="product.category"
-        :to="{ name: 'category', params: { id: product.category.id } }"
-        class="muted breadcrumb"
-      >
+      <RouterLink v-if="product.category"
+                  :to="{ name: 'category', params: { id: product.category.id } }"
+                  class="muted breadcrumb">
         ← {{ product.category.name }}
       </RouterLink>
 
       <h1>{{ product.name }}</h1>
-      <p class="price">{{ product.price.toLocaleString('ru-RU') }} ₽</p>
+      <p class="price">{{ money(product.price) }} ₽</p>
       <p class="description">{{ product.description || 'Описание пока не заполнено.' }}</p>
 
       <div class="actions">
-        <button class="btn" @click="cart.add(product.id)">В корзину</button>
-        <RouterLink v-if="cart.quantityOf(product.id)" to="/cart" class="btn btn-ghost">
+        <button class="btn btn-lg" @click="add">В корзину</button>
+        <RouterLink v-if="cart.quantityOf(product.id)" to="/cart" class="btn btn-ghost btn-lg">
           В корзине: {{ cart.quantityOf(product.id) }} шт.
         </RouterLink>
       </div>
@@ -66,13 +86,14 @@ watch(() => props.id, load)
 .detail {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 36px;
+  gap: 42px;
   align-items: start;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 780px) {
   .detail {
     grid-template-columns: 1fr;
+    gap: 26px;
   }
 }
 
@@ -93,6 +114,7 @@ watch(() => props.id, load)
   place-items: center;
   height: 100%;
   color: var(--muted);
+  opacity: 0.45;
 }
 
 .breadcrumb {
@@ -104,25 +126,39 @@ watch(() => props.id, load)
 }
 
 h1 {
-  font-size: 28px;
-  letter-spacing: -0.02em;
-  margin: 10px 0 12px;
+  font-size: 30px;
+  margin: 12px 0 14px;
 }
 
 .price {
-  font-size: 24px;
-  font-weight: 650;
-  margin: 0 0 18px;
+  font-size: 26px;
+  font-weight: 680;
+  margin: 0 0 20px;
 }
 
 .description {
-  color: var(--muted);
-  margin: 0 0 28px;
+  color: var(--text-soft);
+  margin: 0 0 30px;
+  max-width: 52ch;
 }
 
 .actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.sk-line {
+  height: 16px;
+  margin-bottom: 14px;
+}
+
+.sk-line.lg {
+  height: 30px;
+  width: 70%;
+}
+
+.sk-line.short {
+  width: 40%;
 }
 </style>

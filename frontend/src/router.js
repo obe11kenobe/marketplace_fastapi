@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import CatalogView from './views/CatalogView.vue'
+import { getToken } from './api'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -18,7 +19,21 @@ export const router = createRouter({
       props: (route) => ({ id: Number(route.params.id) }),
     },
     { path: '/cart', name: 'cart', component: () => import('./views/CartView.vue') },
+    { path: '/login', name: 'login', component: () => import('./views/LoginView.vue') },
+    { path: '/register', name: 'register', component: () => import('./views/RegisterView.vue') },
+    {
+      path: '/orders',
+      name: 'orders',
+      component: () => import('./views/OrdersView.vue'),
+      meta: { requiresAuth: true },
+    },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('./views/NotFoundView.vue') },
   ],
   scrollBehavior: () => ({ top: 0 }),
+})
+
+router.beforeEach((to) => {
+  if (to.meta.requiresAuth && !getToken()) {
+    return { name: 'login', query: { redirect: to.fullPath } }
+  }
 })
