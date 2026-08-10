@@ -21,7 +21,7 @@ class CartItem(CartItemBase):
     subtotal: float = Field(..., description="Subtotal in cart")
     image_url: Optional[str] = Field(None, description="Product image url")
 
-class ItemResponse(CartItemBase):
-    id: int = Field(..., description="List of items in cart")
+class CartResponse(BaseModel):
+    items: list[CartItem] = Field(..., description="List of items in cart")
     total: float = Field(..., description="Total price in cart")
-    item_count: int = Field(..., description="Total number of items in cart")
+    items_count: int = Field(..., description="Total number of items in cart")

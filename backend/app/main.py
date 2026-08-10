@@ -1,16 +1,42 @@
-# This is a sample Python script.
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from .config import settings
+from .database import init_db
+from .routes import products_router, categories_router, cart_router
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+app = FastAPI(
+    title=settings.app_name,
+    debug=settings.debug,
+    docs_url='/api/docs',
+    redoc_url='/api/redoc'
+)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+app.mount('/static', StaticFiles(directory=settings.static_dir), name='static')
 
+app.include_router(products_router)
+app.include_router(categories_router)
+app.include_router(cart_router)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.on_event('startup')
+def on_startup():
+    init_db()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+@app.get('/')
+def root():
+    return {
+        'message': 'Welcome to fastapi shop API',
+        "docs": "api/docs",
+    }
+
+@app.get('/health')
+def health_check():
+    return {'status': 'healthy'}

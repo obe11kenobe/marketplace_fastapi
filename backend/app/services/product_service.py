@@ -4,7 +4,7 @@ from typing import List
 from ..models.product import Product
 from ..repositories.product_repository import ProductRepository
 from ..repositories.category_repository import CategoryRepository
-from ..schemas.product import ProductResponse, ProductListResponse, ProductCreate
+from ..schemas.products import ProductResponse, ProductListResponse, ProductCreate
 from fastapi import HTTPException, status
 
 

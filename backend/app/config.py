@@ -1,22 +1,20 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from .config import settings
+from pydantic_settings import BaseSettings
+from typing import List, Union
 
-engine = create_engine(
-    settings.database_url,
-    connect_args={"check_same_thread": False}
-)
+class Settings(BaseSettings):
+    app_name: str = "FastAPI Shop"
+    debug: bool = True
+    database_url: str = "sqlite:///./shop.db"
+    cors_origins: Union[List[str], str] = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+    ]
+    static_dir: str = "static"
+    images_dir: str = "static/images"
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+    class Config:
+        env_file = ".env"
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-def init_db():
-    Base.metadata.create_all(bind=engine)
+settings = Settings()
