@@ -4,7 +4,7 @@ from ..models.product import Product
 from ..schemas.product import ProductCreate
 
 class ProductRepository:
-    def __init__(self):
+    def __init__(self, db: Session):
         self.db = db
 
     def get_all(self) -> List[Product]:
