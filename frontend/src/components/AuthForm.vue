@@ -27,7 +27,7 @@ async function submit() {
     else await auth.register(email.value, password.value)
 
     notify(isLogin ? 'С возвращением!' : 'Аккаунт создан')
-    router.push(route.query.redirect || '/')
+    router.push(route.query.redirect || (auth.isSeller.value ? '/seller' : '/'))
   } catch (e) {
     error.value = e.message
   } finally {
@@ -69,10 +69,12 @@ async function submit() {
 
       <p class="switch muted">
         <template v-if="isLogin">
-          Нет аккаунта? <RouterLink :to="{ name: 'register', query: route.query }" class="link">Зарегистрироваться</RouterLink>
+          Нет аккаунта?
+          <RouterLink :to="{ name: 'register', query: route.query }" class="link">Зарегистрироваться</RouterLink>
         </template>
         <template v-else>
-          Уже есть аккаунт? <RouterLink :to="{ name: 'login', query: route.query }" class="link">Войти</RouterLink>
+          Уже есть аккаунт?
+          <RouterLink :to="{ name: 'login', query: route.query }" class="link">Войти</RouterLink>
         </template>
       </p>
     </div>
@@ -88,7 +90,7 @@ async function submit() {
 
 .panel {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   padding: 32px;
   box-shadow: var(--shadow);
 }

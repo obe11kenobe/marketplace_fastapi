@@ -11,6 +11,8 @@ export function useAuth() {
     user: computed(() => state.user),
     ready: computed(() => state.ready),
     isAuthenticated: computed(() => Boolean(state.user)),
+    isSeller: computed(() => state.user?.role === 'seller'),
+    isAdmin: computed(() => state.user?.role === 'admin'),
 
     async restore() {
       if (getToken()) {

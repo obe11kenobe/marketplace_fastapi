@@ -43,10 +43,14 @@ function logout() {
             <button class="icon-link" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen">
               <span class="avatar" aria-hidden="true">{{ auth.user.value.email[0].toUpperCase() }}</span>
               <span class="label email">{{ auth.user.value.email }}</span>
+              <span v-if="auth.isSeller.value" class="role-tag">Продавец</span>
+              <span v-else-if="auth.isAdmin.value" class="role-tag">Админ</span>
             </button>
 
             <Transition name="fade">
               <div v-if="menuOpen" class="menu card" @click="menuOpen = false">
+                <RouterLink v-if="auth.isSeller.value" to="/seller" class="menu-item">Мои товары</RouterLink>
+                <RouterLink v-if="auth.isAdmin.value" to="/admin" class="menu-item">Пользователи</RouterLink>
                 <RouterLink to="/orders" class="menu-item">Мои заказы</RouterLink>
                 <button class="menu-item danger" @click="logout">Выйти</button>
               </div>
@@ -139,6 +143,15 @@ function logout() {
   font-weight: 700;
   display: grid;
   place-items: center;
+}
+
+.role-tag {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 650;
 }
 
 .email {

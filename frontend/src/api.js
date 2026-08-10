@@ -52,6 +52,16 @@ export const api = {
     request('/api/auth/login', { method: 'POST', body: { email, password } }),
   me: () => request('/api/auth/me', { auth: true }),
 
+  users: () => request('/api/auth/users', { auth: true }),
+  setUserRole: (id, role) =>
+    request(`/api/auth/users/${id}/role`, { method: 'PATCH', body: { role }, auth: true }),
+
+  myProducts: () => request('/api/products/my', { auth: true }),
+  createProduct: (data) => request('/api/products', { method: 'POST', body: data, auth: true }),
+  updateProduct: (id, data) =>
+    request(`/api/products/${id}`, { method: 'PUT', body: data, auth: true }),
+  deleteProduct: (id) => request(`/api/products/${id}`, { method: 'DELETE', auth: true }),
+
   createOrder: (cart) => request('/api/orders', { method: 'POST', body: { cart }, auth: true }),
   orders: () => request('/api/orders', { auth: true }),
   order: (id) => request(`/api/orders/${id}`, { auth: true }),
