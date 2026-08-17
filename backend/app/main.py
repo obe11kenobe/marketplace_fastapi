@@ -17,6 +17,7 @@ from .cart import cart_router
 from .auth import auth_router
 from .auth.security.security import security
 from .orders import orders_router
+from .wishlist import wishlist_router
 
 app = FastAPI(
     title=settings.app_name,
@@ -40,6 +41,7 @@ app.include_router(categories_router)
 app.include_router(cart_router)
 app.include_router(auth_router)
 app.include_router(orders_router)
+app.include_router(wishlist_router)
 
 security.handle_errors(app)
 
@@ -54,8 +56,6 @@ def health_check():
     return {'status': 'healthy'}
 
 class SPAStaticFiles(StaticFiles):
-    """Неизвестный путь отдаёт index.html — иначе перезагрузка на /cart вернёт 404."""
-
     async def get_response(self, path, scope):
         try:
             return await super().get_response(path, scope)
