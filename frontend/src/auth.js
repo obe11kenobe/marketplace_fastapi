@@ -1,5 +1,6 @@
 import { reactive, computed } from 'vue'
 import { api, getToken, setToken } from './api'
+import { useWishlist } from './wishlist'
 
 const state = reactive({
   user: null,
@@ -29,6 +30,7 @@ export function useAuth() {
       const tokens = await api.login(email, password)
       setToken(tokens.access_token)
       state.user = await api.me()
+      await useWishlist().load()
     },
 
     async register(email, password) {
@@ -39,6 +41,7 @@ export function useAuth() {
     logout() {
       setToken('')
       state.user = null
+      useWishlist().reset()
     },
   }
 }

@@ -3,10 +3,12 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCart } from '../cart'
 import { useAuth } from '../auth'
+import { useWishlist } from '../wishlist'
 import { notify } from '../toast'
 
 const cart = useCart()
 const auth = useAuth()
+const wishlist = useWishlist()
 const router = useRouter()
 const menuOpen = ref(false)
 
@@ -51,6 +53,10 @@ function logout() {
               <div v-if="menuOpen" class="menu card" @click="menuOpen = false">
                 <RouterLink v-if="auth.isSeller.value" to="/seller" class="menu-item">Мои товары</RouterLink>
                 <RouterLink v-if="auth.isAdmin.value" to="/admin" class="menu-item">Пользователи</RouterLink>
+                <RouterLink to="/wishlist" class="menu-item">
+                  Избранное
+                  <span v-if="wishlist.count.value" class="menu-count">{{ wishlist.count.value }}</span>
+                </RouterLink>
                 <RouterLink to="/orders" class="menu-item">Мои заказы</RouterLink>
                 <button class="menu-item danger" @click="logout">Выйти</button>
               </div>
@@ -187,6 +193,16 @@ function logout() {
 
 .menu-item:hover {
   background: var(--bg);
+}
+
+.menu-count {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 650;
 }
 
 .menu-item.danger {

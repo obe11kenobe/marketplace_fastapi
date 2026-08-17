@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import settings
@@ -7,6 +7,14 @@ engine = create_engine(
     settings.database_url,
     connect_args={"check_same_thread": False}
 )
+
+@event.listens_for(engine, "connect")
+def _enable_foreign_keys(dbapi_connection, _):
+    """SQLite не проверяет внешние ключи, пока не попросишь — иначе ondelete='CASCADE'
+    в моделях ничего не делает и в базе остаются ссылки на удалённые строки."""
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

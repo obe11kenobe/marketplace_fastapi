@@ -34,6 +34,12 @@ export const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/wishlist',
+      name: 'wishlist',
+      component: () => import('./views/WishlistView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/orders',
       name: 'orders',
       component: () => import('./views/OrdersView.vue'),

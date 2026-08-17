@@ -4,13 +4,15 @@ import AppHeader from './components/AppHeader.vue'
 import AppToasts from './components/AppToasts.vue'
 import { useCart } from './cart'
 import { useAuth } from './auth'
+import { useWishlist } from './wishlist'
 
 const cart = useCart()
 const auth = useAuth()
+const wishlist = useWishlist()
 
 onMounted(async () => {
   await auth.restore()
-  await cart.sync()
+  await Promise.all([cart.sync(), wishlist.load()])
 })
 </script>
 

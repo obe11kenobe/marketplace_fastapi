@@ -62,6 +62,12 @@ export const api = {
     request(`/api/products/${id}`, { method: 'PUT', body: data, auth: true }),
   deleteProduct: (id) => request(`/api/products/${id}`, { method: 'DELETE', auth: true }),
 
+  wishlist: () => request('/api/wishlist', { auth: true }),
+  addToWishlist: (productId) =>
+    request('/api/wishlist', { method: 'POST', body: { product_id: productId }, auth: true }),
+  removeFromWishlist: (productId) =>
+    request(`/api/wishlist/${productId}`, { method: 'DELETE', auth: true }),
+
   createOrder: (cart) => request('/api/orders', { method: 'POST', body: { cart }, auth: true }),
   orders: () => request('/api/orders', { auth: true }),
   order: (id) => request(`/api/orders/${id}`, { auth: true }),
