@@ -11,7 +11,9 @@ from authx.exceptions import (
     TokenInvalidSignatureError,
 )
 from .config import settings
-from .routes import products_router, categories_router, cart_router
+from .products import products_router
+from .categories import categories_router
+from .cart import cart_router
 from .auth import auth_router
 from .auth.security.security import security
 from .orders import orders_router

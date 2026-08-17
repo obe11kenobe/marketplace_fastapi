@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from typing import List
 
-from ..models.product import Product
-from ..repositories.product_repository import ProductRepository
-from ..repositories.category_repository import CategoryRepository
-from ..schemas.products import ProductResponse, ProductListResponse, ProductCreate, ProductUpdate
+from .models import Product
+from .repository import ProductRepository
+from ..categories.repository import CategoryRepository
+from .schemas import ProductResponse, ProductListResponse, ProductCreate, ProductUpdate
 from fastapi import HTTPException, status
 
 

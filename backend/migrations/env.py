@@ -19,9 +19,11 @@ from app.database import Base
 
 # Импорты обязательны: модель, которую никто не импортировал, отсутствует в
 # Base.metadata — и autogenerate решит, что её таблицу надо удалить.
-import app.models   # noqa: F401  каталог
-import app.auth     # noqa: F401  пользователи
-import app.orders   # noqa: F401  заказы
+import app.categories  # noqa: F401  категории
+import app.products    # noqa: F401  товары
+import app.auth        # noqa: F401  пользователи
+import app.orders      # noqa: F401  заказы
+import app.wishlist    # noqa: F401  избранное
 
 config.set_main_option("sqlalchemy.url", settings.database_url)
 target_metadata = Base.metadata

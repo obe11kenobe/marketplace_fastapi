@@ -3,7 +3,7 @@ from typing import Dict, List
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from ..repositories.product_repository import ProductRepository
+from ..products.repository import ProductRepository
 from .models import Order, OrderItem
 from .repository import OrderRepository
 from .schemas import OrderResponse

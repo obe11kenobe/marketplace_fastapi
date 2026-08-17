@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..auth import User, require_seller
-from ..services.product_service import ProductService
-from ..schemas.products import ProductResponse, ProductListResponse, ProductCreate, ProductUpdate
+from .service import ProductService
+from .schemas import ProductResponse, ProductListResponse, ProductCreate, ProductUpdate
 
 router = APIRouter(
     prefix="/api/products",

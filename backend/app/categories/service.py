@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List
-from ..repositories.category_repository import CategoryRepository
-from ..schemas.categories import CategoryResponse, CategoryCreate
+from .repository import CategoryRepository
+from .schemas import CategoryResponse, CategoryCreate
 from fastapi import HTTPException, status
 
 class CategoryService:
