@@ -34,6 +34,12 @@ export const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/moderation',
+      name: 'moderation',
+      component: () => import('./views/ModerationView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/wishlist',
       name: 'wishlist',
       component: () => import('./views/WishlistView.vue'),

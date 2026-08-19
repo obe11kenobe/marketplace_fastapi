@@ -53,6 +53,7 @@ function logout() {
               <div v-if="menuOpen" class="menu card" @click="menuOpen = false">
                 <RouterLink v-if="auth.isSeller.value" to="/seller" class="menu-item">Мои товары</RouterLink>
                 <RouterLink v-if="auth.isAdmin.value" to="/admin" class="menu-item">Пользователи</RouterLink>
+                <RouterLink v-if="auth.isAdmin.value" to="/moderation" class="menu-item">Модерация</RouterLink>
                 <RouterLink to="/wishlist" class="menu-item">
                   Избранное
                   <span v-if="wishlist.count.value" class="menu-count">{{ wishlist.count.value }}</span>

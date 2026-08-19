@@ -3,6 +3,7 @@ import { ref, watch, onMounted } from 'vue'
 import { api } from '../api'
 import { useCart } from '../cart'
 import { notify } from '../toast'
+import ProductReviews from '../components/ProductReviews.vue'
 
 const props = defineProps({
   id: { type: Number, required: true },
@@ -80,6 +81,8 @@ watch(() => props.id, load)
       </div>
     </div>
   </article>
+
+  <ProductReviews v-if="product" :product-id="product.id" />
 </template>
 
 <style scoped>

@@ -62,6 +62,16 @@ export const api = {
     request(`/api/products/${id}`, { method: 'PUT', body: data, auth: true }),
   deleteProduct: (id) => request(`/api/products/${id}`, { method: 'DELETE', auth: true }),
 
+  productReviews: (productId) => request(`/api/products/${productId}/reviews`),
+  productRating: (productId) => request(`/api/products/${productId}/rating`),
+  createReview: (data) => request('/api/reviews', { method: 'POST', body: data, auth: true }),
+  updateReview: (id, data) =>
+    request(`/api/reviews/${id}`, { method: 'PATCH', body: data, auth: true }),
+  deleteReview: (id) => request(`/api/reviews/${id}`, { method: 'DELETE', auth: true }),
+  moderationQueue: () => request('/api/reviews/moderation', { auth: true }),
+  moderateReview: (id, status) =>
+    request(`/api/reviews/${id}/status`, { method: 'PATCH', body: { status }, auth: true }),
+
   wishlist: () => request('/api/wishlist', { auth: true }),
   addToWishlist: (productId) =>
     request('/api/wishlist', { method: 'POST', body: { product_id: productId }, auth: true }),
