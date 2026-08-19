@@ -24,6 +24,7 @@ import app.products    # noqa: F401  товары
 import app.auth        # noqa: F401  пользователи
 import app.orders      # noqa: F401  заказы
 import app.wishlist    # noqa: F401  избранное
+import app.reviews     # noqa: F401  отзывы
 
 config.set_main_option("sqlalchemy.url", settings.database_url)
 target_metadata = Base.metadata

@@ -18,6 +18,7 @@ from .auth import auth_router
 from .auth.security.security import security
 from .orders import orders_router
 from .wishlist import wishlist_router
+from .reviews import reviews_router
 
 app = FastAPI(
     title=settings.app_name,
@@ -42,6 +43,7 @@ app.include_router(cart_router)
 app.include_router(auth_router)
 app.include_router(orders_router)
 app.include_router(wishlist_router)
+app.include_router(reviews_router)
 
 security.handle_errors(app)
 

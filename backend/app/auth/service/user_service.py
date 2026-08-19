@@ -1,7 +1,7 @@
 from typing import List
 
 from authx import TokenPayload
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -70,6 +70,17 @@ def get_current_user(
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="Пользователь недоступен")
     return user
+
+async def get_optional_user(request: Request, db: Session = Depends(get_db)) -> User | None:
+    """Для публичных ручек, которые показывают авторизованному чуть больше.
+    Нет токена или он протух — просто None, без 401."""
+    try:
+        payload = await security.access_token_required(request)
+    except Exception:
+        return None
+
+    user = UserRepository(db).get_by_id(int(payload.sub))
+    return user if user and user.is_active else None
 
 def require_admin(user: User = Depends(get_current_user)) -> User:
     if user.role != "admin":
