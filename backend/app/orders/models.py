@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from ..database import Base
@@ -12,7 +12,7 @@ class Order(Base):
     total = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    items = relationship("OrderItem", back_populates="order")
+    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
     user = relationship("User")
 
 class OrderItem(Base):
